@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Bootstrap POM: NOT part of the Petclinic build, and never built by it.
+
+  Maven loads the core extensions declared in .mvn/extensions.xml before it reads pom.xml,
+  resolving them from the repositories known to settings.xml alone. mvn-lens is only published
+  as a SNAPSHOT so far, to the Maven Central snapshot repository, which is not enabled by
+  default, so the extension cannot be resolved on a clean machine and the repository serving it
+  cannot be declared in pom.xml for this artifact.
+
+  Building this POM first downloads mvn-lens-extension and its dependencies into the local
+  repository, after which every later Maven invocation - the wrapper bootstrap and the build
+  itself - resolves the extension from there:
+
+      cd .mvn
+      ../mvnw -U dependency:resolve
+
+  Run it from .mvn: the Maven launcher walks up from the current directory (from the POM's
+  directory when -f is given, with the launchers of Maven 3.9.16 at least) looking for a ".mvn"
+  folder to use as the multi-module project directory. Starting from .mvn it finds .mvn/.mvn, an
+  empty marker directory kept by .mvn/.mvn/.gitkeep, and so reads .mvn/.mvn/extensions.xml,
+  which does not exist, instead of .mvn/extensions.xml, the very file declaring the extension
+  being downloaded. Changing into .mvn rather than relying on -f keeps that independent of how
+  a given launcher (or IDE) treats -f.
+
+  See .github/workflows/maven-build.yml.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.springframework.samples</groupId>
+  <artifactId>spring-petclinic-mvn-lens-bootstrap</artifactId>
+  <version>999.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>petclinic (mvn-lens extension bootstrap)</name>
+  <description>
+    Downloads the mvn-lens core extension into the local repository so the Petclinic build can load it.
+  </description>
+
+  <repositories>
+    <repository>
+      <id>central-snapshots</id>
+      <name>Maven Central snapshot repository</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.mvn-perf</groupId>
+      <artifactId>mvn-lens-extension</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>
