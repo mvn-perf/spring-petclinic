@@ -25,7 +25,7 @@ cd spring-petclinic
 The Maven build loads the [mvn-lens](#build-profiling-with-mvn-lens-and-the-build-dashboard) core extension, which has to be downloaded once before the first Maven invocation on a clean machine:
 
 ```bash
-cd .mvn && ../mvnw -U dependency:resolve && cd ..
+(cd .mvn && ../mvnw -U dependency:resolve)
 ```
 
 If you are using Maven, you can start the application on the command-line as follows:
@@ -68,7 +68,7 @@ Every Maven invocation in this repository is profiled by [mvn-lens](https://gith
 mvn-lens is only published as a SNAPSHOT so far, and Maven resolves core extensions before it reads `pom.xml`, so the extension has to be downloaded into the local repository once before the first build on a clean machine:
 
 ```bash
-cd .mvn && ../mvnw -U dependency:resolve && cd ..
+(cd .mvn && ../mvnw -U dependency:resolve)
 ```
 
 See `.mvn/pom.xml` for the details. Pass `-Dmvnlens.disabled=true` to switch the profiler off for a single invocation.
@@ -145,7 +145,13 @@ The following items should be installed in your system:
     git clone https://github.com/spring-projects/spring-petclinic.git
     ```
 
-1. Inside Eclipse or STS:
+'1. Download the [mvn-lens](#build-profiling-with-mvn-lens-and-the-build-dashboard) core extension once, before the first Maven invocation or IDE import:
+
+    ```bash
+    (cd spring-petclinic/.mvn && ../mvnw -U dependency:resolve)
+    ```
+
+'1. Inside Eclipse or STS:
 
     Open the project via `File -> Import -> Maven -> Existing Maven project`, then select the root directory of the cloned repo.
 
