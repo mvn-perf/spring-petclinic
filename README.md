@@ -145,13 +145,13 @@ The following items should be installed in your system:
     git clone https://github.com/spring-projects/spring-petclinic.git
     ```
 
-'1. Download the [mvn-lens](#build-profiling-with-mvn-lens-and-the-build-dashboard) core extension once, before the first Maven invocation or IDE import:
+1. Download the [mvn-lens](#build-profiling-with-mvn-lens-and-the-build-dashboard) core extension once, before the first Maven invocation or IDE import:
 
     ```bash
     (cd spring-petclinic/.mvn && ../mvnw -U dependency:resolve)
     ```
 
-'1. Inside Eclipse or STS:
+1. Inside Eclipse or STS:
 
     Open the project via `File -> Import -> Maven -> Existing Maven project`, then select the root directory of the cloned repo.
 
