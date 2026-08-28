@@ -1,0 +1,49 @@
+# Publishes the build dashboard (https://github.com/mvn-perf/build-dashboard) to GitHub Pages
+# after every CI run, nightly, and on demand: workflow and step durations over time, a timeline
+# of every run and, for the Maven build profiled with mvn-lens, the build-time trend and a link
+# to every report.
+#
+# The site is pushed to the gh-pages branch as a single orphan commit. One-time repository
+# setup: Settings -> Pages -> Build and deployment -> Source: "Deploy from a branch",
+# Branch: gh-pages / (root). The first run of this workflow creates the branch.
+
+name: Build dashboard
+
+on:
+  workflow_run:
+    # The workflows whose runs feed the dashboard - it refreshes as soon as one of them
+    # completes (the triggering run is always re-fetched).
+    workflows: ['Java CI with Maven', 'Java CI with Gradle', 'Deploy and Test Cluster']
+    types: [completed]
+  schedule:
+    - cron: '17 3 * * *'   # daily catch-up (runs older than the last trigger, pruning, expired artifacts)
+  workflow_dispatch:
+    inputs:
+      force-refresh:
+        description: Re-fetch every run in range
+        type: boolean
+        default: false
+
+permissions:
+  actions: read      # list runs, jobs and artifacts; download the mvn-lens report artifacts
+  contents: write    # push the site to the gh-pages branch
+
+# Never publish twice at the same time (the site is a single branch).
+concurrency:
+  group: build-dashboard
+  cancel-in-progress: false
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and publish the dashboard
+        id: dashboard
+        uses: mvn-perf/build-dashboard@main
+        with:
+          publish-branch: gh-pages
+          force-refresh: ${{ inputs.force-refresh || false }}
+
+      - name: Where is it?
+        run: |
+          echo "Dashboard: ${{ steps.dashboard.outputs.site-url }} (${{ steps.dashboard.outputs.runs-total }} runs, ${{ steps.dashboard.outputs.reports-collected }} new mvn-lens reports)"

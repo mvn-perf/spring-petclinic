@@ -1,0 +1,6 @@
+Intentionally empty.
+
+Only the directory matters. Maven run from .mvn (see ../pom.xml) walks up looking for a
+".mvn" folder to use as the multi-module project directory; finding .mvn/.mvn first makes
+it read .mvn/.mvn/extensions.xml - nothing here - instead of .mvn/extensions.xml, which
+declares the very extension that invocation is downloading.

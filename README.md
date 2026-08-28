@@ -55,6 +55,20 @@ docker images | grep petclinic
 docker run -p 8080:8080 docker.io/library/spring-petclinic:latest
 ```
 
+## Build profiling with mvn-lens and the build dashboard
+
+Every Maven invocation in this repository is profiled by [mvn-lens](https://github.com/mvn-perf/mvn-lens), a JFR-based Maven build profiler loaded as a core extension from `.mvn/extensions.xml`. It writes a self-contained report - build timeline, flame graphs, GC/JIT times, slowest tests - to `target/mvnlens/report.html` at the end of every Maven session.
+
+mvn-lens is only published as a SNAPSHOT so far, and Maven resolves core extensions before it reads `pom.xml`, so the extension has to be downloaded into the local repository once before the first build on a clean machine:
+
+```bash
+cd .mvn && ../mvnw -U dependency:resolve && cd ..
+```
+
+See `.mvn/pom.xml` for the details. Pass `-Dmvnlens.disabled=true` to switch the profiler off for a single invocation.
+
+The [Java CI with Maven](.github/workflows/maven-build.yml) workflow runs that bootstrap itself and attaches the report of every build to the run. The [Build dashboard](.github/workflows/build-dashboard.yml) workflow then publishes a dashboard of all CI builds - workflow and step durations over time, a timeline of every run, and the Maven build-time trend with a link to every mvn-lens report - to GitHub Pages: <https://mvn-perf.github.io/spring-petclinic/>.
+
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
 Our issue tracker is available [here](https://github.com/spring-projects/spring-petclinic/issues).

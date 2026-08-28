@@ -1,5 +1,10 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-maven
+#
+# The Maven build is profiled by mvn-lens (https://github.com/mvn-perf/mvn-lens), loaded as a core
+# extension from .mvn/extensions.xml. Its report is attached to the build step so that the build
+# dashboard (.github/workflows/build-dashboard.yml) links it from the run timeline and trends the
+# Maven build time across runs.
 
 name: Java CI with Maven
 
@@ -8,6 +13,11 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read   # lets the "Attach mvn-lens report" step identify its own job and step through the API
 
 jobs:
   build:
@@ -25,5 +35,25 @@ jobs:
           java-version: ${{matrix.java}}
           distribution: 'adopt'
           cache: maven
+
+      # Must come before any Maven invocation rooted at the checkout: Maven loads the core
+      # extensions listed in .mvn/extensions.xml before it reads pom.xml, resolving them from
+      # settings.xml only, so the Maven Central snapshot repository serving mvn-lens cannot be
+      # declared in pom.xml. Building .mvn/pom.xml downloads the extension into the local
+      # repository, where every later invocation finds it. Runs from .mvn on purpose - see
+      # .mvn/pom.xml on why.
+      - name: Pre-resolve the mvn-lens extension
+        working-directory: .mvn
+        run: ../mvnw -B -ntp -U dependency:resolve
+
       - name: Build with Maven Wrapper
         run: ./mvnw -B verify
+
+      # mvn-lens writes the report when the Maven session ends, a failed one included, which is
+      # exactly the build worth looking at - hence always(). The step uploads the report as an
+      # artifact the build dashboard collects (mvn-lens--j<jobId>--s<step>).
+      - name: Attach mvn-lens report
+        if: always()
+        uses: mvn-perf/build-dashboard/mvn-lens@main
+        with:
+          report: target/mvnlens/report.html
