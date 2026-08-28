@@ -51,9 +51,13 @@ jobs:
 
       # mvn-lens writes the report when the Maven session ends, a failed one included, which is
       # exactly the build worth looking at - hence always(). The step uploads the report as an
-      # artifact the build dashboard collects (mvn-lens--j<jobId>--s<step>).
+      # artifact the build dashboard collects (mvn-lens--j<jobId>--s<step>). step-name pins the
+      # report to the build step: the automatic attribution goes by the second the report was
+      # written, which is also the second this step starts, and half of the runs ended up
+      # attributed to the attach step itself.
       - name: Attach mvn-lens report
         if: always()
         uses: mvn-perf/build-dashboard/mvn-lens@main
         with:
           report: target/mvnlens/report.html
+          step-name: Build with Maven Wrapper
