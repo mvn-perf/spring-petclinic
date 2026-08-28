@@ -22,6 +22,12 @@ You first need to clone the project locally:
 git clone https://github.com/spring-projects/spring-petclinic.git
 cd spring-petclinic
 ```
+The Maven build loads the [mvn-lens](#build-profiling-with-mvn-lens-and-the-build-dashboard) core extension, which has to be downloaded once before the first Maven invocation on a clean machine:
+
+```bash
+cd .mvn && ../mvnw -U dependency:resolve && cd ..
+```
+
 If you are using Maven, you can start the application on the command-line as follows:
 
 ```bash

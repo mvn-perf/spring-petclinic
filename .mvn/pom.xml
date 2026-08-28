@@ -15,12 +15,13 @@
       cd .mvn
       ../mvnw -U dependency:resolve
 
-  Run it from .mvn rather than with the -f option from the root: Maven walks up from the
-  current directory looking for a ".mvn" folder to use as the multi-module project directory,
-  and only the Unix launcher takes -f into account when choosing where to start. Starting from
-  .mvn it finds .mvn/.mvn, an empty marker directory kept by .mvn/.mvn/.gitkeep, and so reads
-  .mvn/.mvn/extensions.xml, which does not exist, instead of .mvn/extensions.xml, the very file
-  declaring the extension being downloaded.
+  Run it from .mvn: the Maven launcher walks up from the current directory (from the POM's
+  directory when -f is given, with the launchers of Maven 3.9.16 at least) looking for a ".mvn"
+  folder to use as the multi-module project directory. Starting from .mvn it finds .mvn/.mvn, an
+  empty marker directory kept by .mvn/.mvn/.gitkeep, and so reads .mvn/.mvn/extensions.xml,
+  which does not exist, instead of .mvn/extensions.xml, the very file declaring the extension
+  being downloaded. Changing into .mvn rather than relying on -f keeps that independent of how
+  a given launcher (or IDE) treats -f.
 
   See .github/workflows/maven-build.yml.
 -->
