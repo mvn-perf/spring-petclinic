@@ -42,7 +42,7 @@ jobs:
       # declared in pom.xml. Building .mvn/pom.xml downloads the extension into the local
       # repository, where every later invocation finds it. Runs from .mvn on purpose - see
       # .mvn/pom.xml on why.
-      - name: Pre-resolve the mvn-lens extension
+      - name: Pre-resolve the mvn-lens SNAPSHOT extension
         working-directory: .mvn
         run: ../mvnw -B -ntp -U dependency:resolve
 
